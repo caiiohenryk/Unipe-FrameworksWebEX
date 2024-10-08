@@ -19,6 +19,13 @@ class AlunoController {
 
     static send(req, res) {
         const {nome, nota1, nota2} = req.body;
+        if (!AlunoController.checarNotas(nota1,nota2)) {
+            res.status(400).send({
+                status:false,
+                message:"Insira notas válidas (0 a 10)"
+            })
+        }
+
         const media = AlunoController.calcularMedia(nota1, nota2);
         let aluno = {
             id: alunos.at(-1).id + 1,
@@ -38,6 +45,13 @@ class AlunoController {
 
     static update(req, res) {
         const { nome, nota1, nota2} = req.body;
+        if (!AlunoController.checarNotas(nota1,nota2)) {
+            res.status(400).send({
+                status:false,
+                message:"Insira uma notas válidas (0 a 10)"
+            })
+        }
+
         const { id } = req.params;
         const media = AlunoController.calcularMedia(nota1, nota2);
         let dbAluno = alunos.find(
@@ -102,6 +116,10 @@ class AlunoController {
 
     }
     
+    static checarNotas(nota1, nota2) {
+        if (nota1 > 10 || nota1 < 0) return false;
+        if (nota2 > 10 || nota2 < 0) return false;
+    }
 
     static calcularMedia(nota1, nota2) {
         return ((nota1+nota2)/2)
