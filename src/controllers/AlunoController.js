@@ -36,6 +36,73 @@ class AlunoController {
         })
     }
 
+    static update(req, res) {
+        const { nome, nota1, nota2} = req.body;
+        const { id } = req.params;
+        const media = AlunoController.calcularMedia(nota1, nota2);
+        let dbAluno = alunos.find(
+            (aluno)=>aluno.id == id
+        );
+
+        if (!dbAluno) {
+            res.send(404, 
+            {
+                status: false,
+                message:"Aluno não encontrado"
+            }
+            );
+        }
+        
+        alunos[id-1] = {
+            id:id,
+            nome:nome,
+            nota1:nota1,
+            nota2:nota2,
+            media:media,
+            situacao:AlunoController.checarSituacao(media)
+        }
+
+        res.send(200, {
+            message:"Aluno atualizado com sucesso!",
+            aluno:alunos[id-1]
+        })
+
+    }
+
+    static deletar(req, res) {
+        let {id} = req.params;
+        alunos.splice(id-1, 1);
+        res.status(200).send({
+            status:true,
+            message:"Registro de aluno deletado com sucesso!"
+        });
+    }
+
+    static getById(req, res) {
+        const { id } = req.params;
+
+        let dbAluno = alunos.find(
+            (aluno)=>aluno.id == id
+        );
+
+        if (!dbAluno) {
+            res.status(404).send( 
+            {
+                status:false,
+                message:"Aluno não encontrado"
+            }
+            );
+        }
+
+        res.status(200).send({
+            status:true,
+            message:"Aluno encontrado!",
+            aluno:dbAluno
+        });
+
+    }
+    
+
     static calcularMedia(nota1, nota2) {
         return ((nota1+nota2)/2)
     }
